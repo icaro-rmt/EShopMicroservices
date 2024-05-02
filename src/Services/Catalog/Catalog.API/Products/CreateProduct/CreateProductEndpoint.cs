@@ -22,6 +22,7 @@
                 .ProducesProblem(StatusCodes.Status400BadRequest)
                 .WithSummary("Create Product")
                 .WithDescription("Create Product");
+
         }
     }
 }
