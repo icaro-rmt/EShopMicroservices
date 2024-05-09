@@ -11,7 +11,7 @@
             RuleFor(x => x.Cart.UserName).NotEmpty().WithMessage("Username is Required");
         }
     }
-    public class StoreBasketCommandHandler
+    public class StoreBasketCommandHandler(IBasketRepository repository)
         : ICommandHandler<StoreBasketCommand, StoreBasketResult>
 
     {
@@ -19,10 +19,12 @@
         {
             ShoppingCart cart = command.Cart;
 
+            await repository.StoreBasket(cart, cancellationToken);
+
             //TODO: Store basket in database (using Marten UPSERT - if exist = update, if not = Create)
             //TODO: Update cache
 
-            return new StoreBasketResult("swn");
+            return new StoreBasketResult(command.Cart.UserName);
 
 
         }

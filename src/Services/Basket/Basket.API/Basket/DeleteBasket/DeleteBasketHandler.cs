@@ -10,15 +10,14 @@
             RuleFor(x => x.UserName).NotEmpty().WithMessage("User Name cannot be null");
         }
     }
-    public class DeleteBasketCommandHandler
+    public class DeleteBasketCommandHandler(IBasketRepository repository)
         : ICommandHandler<DeleteBasketCommand, DeleteBasketResult>
     {
         public async Task<DeleteBasketResult> Handle(DeleteBasketCommand command, CancellationToken cancellationToken)
         {
-            // TODO: Delete basket from Database AND Cache
-            //session.Delete<Product>(command.Id);
+            await repository.DeleteBasket(command.UserName, cancellationToken);
 
-              return new DeleteBasketResult(true);
+            return new DeleteBasketResult(true);
         }
     }
 }
