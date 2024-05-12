@@ -1,8 +1,14 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 var assembly = typeof(Program).Assembly;
-var connectionString = builder.Configuration.GetConnectionString("Database");
+var dbConnectionString = builder.Configuration.GetConnectionString("Database");
+var distributedCache = builder.Configuration.GetConnectionString("Redis");
 
 builder.Services.AddCarter();
 builder.Services.AddMediatR(config =>
@@ -14,11 +20,24 @@ builder.Services.AddMediatR(config =>
 
 builder.Services.AddMarten(opts =>
 {
-    opts.Connection(connectionString!);
+    opts.Connection(dbConnectionString!);
     opts.Schema.For<ShoppingCart>().Identity(x => x.UserName);
 }).UseLightweightSessions();
 
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+builder.Services.Decorate<IBasketRepository, CachedBasketRepository>();
+
+builder.Services.AddStackExchangeRedisCache(opts =>
+{
+    opts.Configuration = distributedCache;
+    //opts.InstanceName = "Basket";
+});
+
+builder.Services.AddHealthChecks()
+    .AddNpgSql(dbConnectionString!)
+    .AddRedis(distributedCache!);
+    
+
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 var app = builder.Build();
@@ -26,6 +45,10 @@ var app = builder.Build();
 // Configure the HTTP request Pipeline
 app.MapCarter();
 app.UseExceptionHandler(options => { });
-
+app.UseHealthChecks("/health",
+    new HealthCheckOptions
+    {
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
 
 app.Run();
