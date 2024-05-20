@@ -1,15 +1,16 @@
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
+
+#region Variables
 var assembly = typeof(Program).Assembly;
 var dbConnectionString = builder.Configuration.GetConnectionString("Database");
 var distributedCache = builder.Configuration.GetConnectionString("Redis");
+#endregion
 
+// Add services to the container
 builder.Services.AddCarter();
 builder.Services.AddMediatR(config =>
 {

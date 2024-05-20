@@ -21,9 +21,6 @@
 
             await repository.StoreBasket(cart, cancellationToken);
 
-            //TODO: Store basket in database (using Marten UPSERT - if exist = update, if not = Create)
-            //TODO: Update cache
-
             return new StoreBasketResult(command.Cart.UserName);
 
 

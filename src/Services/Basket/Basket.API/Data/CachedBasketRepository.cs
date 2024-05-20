@@ -37,5 +37,10 @@ namespace Basket.API.Data
 
             return true;
         }
+
+        public Task<IEnumerable<string>> GetAllBaskets(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

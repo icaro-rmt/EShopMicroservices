@@ -8,6 +8,7 @@
 
             return basket is null ? throw new BasketNotFoundException(userName) : basket;
         }
+
         public async Task<bool> DeleteBasket(string userName, CancellationToken cancellationToken = default)
         {
             session.Delete<ShoppingCart>(userName);
@@ -23,6 +24,11 @@
             await session.SaveChangesAsync(cancellationToken);
             return basket;
             
+        }
+
+        public Task<IEnumerable<string>> GetAllBaskets(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }
